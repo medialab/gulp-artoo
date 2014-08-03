@@ -52,5 +52,19 @@ gulp.task('version', function() {
     .pipe(gulp.dest('./output'));
 });
 
+// Templates
+gulp.task('templates', function() {
+  return gulp.src('./test/resources/*.handlebars')
+    .pipe(artoo.template())
+    .pipe(gulp.dest('./output'));
+});
+
+// Stylesheets
+gulp.task('stylesheets', function() {
+  return gulp.src('./test/resources/*.css')
+    .pipe(artoo.stylesheet())
+    .pipe(gulp.dest('./output'));
+});
+
 // Registering default task
-gulp.task('default', ['dev', 'prod', 'multi', 'version']);
+gulp.task('default', ['dev', 'prod', 'multi', 'version', 'templates', 'stylesheets']);

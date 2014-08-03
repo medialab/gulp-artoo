@@ -5,6 +5,7 @@
  * A simple task to create an artoo.js bookmarklet.
  */
 var fs = require('fs'),
+    path = require('path'),
     through = require('through2'),
     stream = require('stream'),
     gutil = require('gulp-util'),
@@ -16,7 +17,7 @@ var fs = require('fs'),
     File = gutil.File;
 
 // Reading template synchronously once
-var template = fs.readFileSync(
+var bookmarkTemplate = fs.readFileSync(
   __dirname + '/bookmarklet.tpl',
   'utf-8'
 );
@@ -43,7 +44,7 @@ function process(string, opts) {
     opts.settings.eval = JSON.stringify(string);
 
   return 'javascript: ' + minify(
-    _t(template, {
+    _t(bookmarkTemplate, {
       settings: JSON.stringify(opts.settings),
       url: opts.url,
       loadingText: opts.loadingText ?
@@ -54,7 +55,23 @@ function process(string, opts) {
   );
 }
 
-// Task
+function external(type, string, path) {
+  var tpl = ';(function(undefined) {' +
+            'artoo.<%= type %>[\'<%= path %>\'] = ' +
+            '\'<%= content %>\';' +
+            '}).call(this);';
+
+  if (path.split('/')[0] === type)
+    path = path.split('/').slice(1);
+
+  return _t(tpl, {
+    type: type,
+    path: path,
+    content: JSON.stringify(string)
+  });
+}
+
+// Mains Task
 function bookmarklet(options) {
 
   // Extending options
@@ -100,6 +117,47 @@ function bookmarklet(options) {
   // Returning the stream
   return stream;
 }
+
+// Templates and Stylesheets
+function makeExternalTask(type) {
+  return function() {
+    var stream = through.obj(function(file, enc, callback) {
+
+      // File is null
+      if (file.isNull()) {
+
+        // Do nothing if no content
+      }
+
+      // File is a buffer
+      else if (file.isBuffer()) {
+        file.contents = new Buffer(
+          external(
+            type,
+            file.contents.toString(),
+            path.relative(file.cwd, file.path)
+          )
+        );
+      }
+
+      // File is stream
+      // TODO: support streams
+      else if (file.isStream()) {
+        return this.emit('error',
+          new PluginError(PLUGIN_NAME,  'Streaming not supported'));
+      }
+
+      this.push(file);
+      return callback();
+    });
+
+    // Returning the stream
+    return stream;
+  }
+}
+
+bookmarklet.template = makeExternalTask('templates');
+bookmarklet.stylesheet = makeExternalTask('stylesheets');
 
 // Helper to start from a blank stream
 bookmarklet.blank = function(filename) {
