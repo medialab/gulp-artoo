@@ -1,5 +1,8 @@
 node_modules
+test
 *.min.js
+gulpfile.js
 output
 .gitignore
 .npmignore
+.DS_Store
