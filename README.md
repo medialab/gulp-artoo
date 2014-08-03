@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="http://medialab.github.io/artoo/grunt/">
+  <a href="http://medialab.github.io/artoo/gulp/">
     <img alt="artoo" width="148" height="148" src="http://medialab.github.io/artoo/public/img/artoo-icon.svg" />
   </a>
 </p>
