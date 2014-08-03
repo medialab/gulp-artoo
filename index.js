@@ -43,7 +43,8 @@ function process(string, opts) {
   if (string)
     opts.settings.eval = JSON.stringify(string);
 
-  return 'javascript: ' + minify(
+  // Templating
+  string = 'javascript: ' + minify(
     _t(bookmarkTemplate, {
       settings: JSON.stringify(opts.settings),
       url: opts.url,
@@ -53,6 +54,13 @@ function process(string, opts) {
         "var r = Math.random(); script.src += '?r=' + r;" : ''
     })
   );
+
+  // Should we encode quotes for html?
+  if (opts.html)
+    string = string.replace(/"/g, '&quot;')
+                   .replace(/'/g, '&#39;');
+
+  return string;
 }
 
 function external(type, string, path) {
