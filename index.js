@@ -44,7 +44,7 @@ function process(string, opts) {
     opts.settings.eval = JSON.stringify(string);
 
   // Templating
-  string = 'javascript: ' + minify(
+  return 'javascript: ' + minify(
     _t(bookmarkTemplate, {
       settings: JSON.stringify(opts.settings),
       url: opts.url,
@@ -54,27 +54,17 @@ function process(string, opts) {
         "var r = Math.random(); script.src += '?r=' + r;" : ''
     })
   );
-
-  // Should we encode quotes for html?
-  if (opts.html)
-    string = string.replace(/"/g, '&quot;')
-                   .replace(/'/g, '&#39;');
-
-  return string;
 }
 
-function external(type, string, path) {
+function external(type, string, name) {
   var tpl = ';(function(undefined) {' +
-            'artoo.<%= type %>[\'<%= path %>\'] = ' +
+            'artoo.<%= type %>[\'<%= name %>\'] = ' +
             '<%= content %>;' +
             '}).call(this);';
 
-  if (path.split('/')[0] === type)
-    path = path.split('/').slice(1);
-
   return _t(tpl, {
     type: type,
-    path: path,
+    name: name,
     content: JSON.stringify(string)
   });
 }
@@ -128,8 +118,17 @@ function bookmarklet(options) {
 
 // Templates and Stylesheets
 function makeExternalTask(type) {
-  return function() {
+  return function(base) {
+    base = base || type;
+
     var stream = through.obj(function(file, enc, callback) {
+
+      // Determining name of external file
+      var name = path.join(file.cwd, base);
+      if (!fs.existsSync(path.resolve(name)))
+        name = path.relative(file.cwd, file.path);
+      else
+        name = path.relative(name, file.path);
 
       // File is null
       if (file.isNull()) {
@@ -143,7 +142,7 @@ function makeExternalTask(type) {
           external(
             type,
             file.contents.toString(),
-            path.relative(file.cwd, file.path)
+            name
           )
         );
       }

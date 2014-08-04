@@ -55,7 +55,7 @@ gulp.task('version', function() {
 // Templates
 gulp.task('templates', function() {
   return gulp.src('./test/resources/*.handlebars')
-    .pipe(artoo.template())
+    .pipe(artoo.template('./test/resources'))
     .pipe(gulp.dest('./output'));
 });
 
@@ -66,15 +66,5 @@ gulp.task('stylesheets', function() {
     .pipe(gulp.dest('./output'));
 });
 
-// HTML Entities
-gulp.task('html', function() {
-  return gulp.src(['./test/resources/dummy-script1.js',
-                   './test/resources/dummy-script2.js'])
-    .pipe(concat('artoo.html.min.js'))
-    .pipe(uglify())
-    .pipe(artoo({html: true}))
-    .pipe(gulp.dest('./output'));
-});
-
 // Registering default task
-gulp.task('default', ['dev', 'prod', 'multi', 'version', 'templates', 'stylesheets', 'html']);
+gulp.task('default', ['dev', 'prod', 'multi', 'version', 'templates', 'stylesheets']);
