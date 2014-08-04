@@ -66,7 +66,7 @@ function process(string, opts) {
 function external(type, string, path) {
   var tpl = ';(function(undefined) {' +
             'artoo.<%= type %>[\'<%= path %>\'] = ' +
-            '\'<%= content %>\';' +
+            '<%= content %>;' +
             '}).call(this);';
 
   if (path.split('/')[0] === type)
