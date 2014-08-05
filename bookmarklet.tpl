@@ -17,7 +17,7 @@
       artoo.loadSettings(s);
 
       // If artoo has some scripts registered, we want to execute them again.
-      artoo.hooks.trigger('exec');
+      artoo.exec();
       inject = false;
     }
   }
