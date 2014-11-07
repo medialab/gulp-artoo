@@ -29,7 +29,7 @@
     var mountNode = document.getElementsByTagName('body')[0];
     if (!mountNode) {
       mountNode = document.createElement('body');
-      document.firstChild.appendChild(mountNode);
+      document.documentElement.appendChild(mountNode);
     }
 
     // artoo is not here, we inject it
