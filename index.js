@@ -186,5 +186,10 @@ bookmarklet.blank = function(filename) {
   return src;
 };
 
+// Version
+Object.defineProperty(bookmarklet, 'version', {
+  value: '0.1.0'
+});
+
 // Exporting
 module.exports = bookmarklet;

@@ -1,6 +1,6 @@
 {
   "name": "gulp-artoo",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "A gulp plugin to create artoo.js bookmarklets.",
   "main": "index.js",
   "scripts": {
